@@ -8,6 +8,16 @@ import { t } from 'i18next';
 import { requestNextAndNavigateChannel } from './utils/innerTubeCalls.js';
 import qrcode from 'qrcode-npm';
 import showGuideSettings from './ui/sidebarModification.js';
+import {
+    showChannelCategories,
+    showCategoryOptions,
+    showCategoryAssign,
+    showCategoryPicker,
+    createCategory,
+    deleteCategoryAndCleanup,
+    toggleChannelCategory,
+    addChannelToCategory
+} from './ui/channelCategories.js';
 
 export default function resolveCommand(cmd, _) {
     // resolveCommand function is pretty OP, it can do from opening modals, changing client settings and way more.
@@ -296,6 +306,30 @@ function customAction(action, parameters) {
             }
             configWrite('sidebarContentsOrder', sortedSidebarContents);
             showToast(t('toasts.sidebarContentsUpdated.title'), t('toasts.sidebarContentsUpdated.subtitle'));
+            break;
+        case 'CHANNEL_CATEGORIES_SHOW':
+            showChannelCategories(parameters);
+            break;
+        case 'CATEGORY_CREATE':
+            createCategory();
+            break;
+        case 'CATEGORY_OPTIONS_SHOW':
+            showCategoryOptions(parameters);
+            break;
+        case 'CATEGORY_DELETE':
+            deleteCategoryAndCleanup(parameters.name);
+            break;
+        case 'CATEGORY_ASSIGN_SHOW':
+            showCategoryAssign(parameters);
+            break;
+        case 'CHANNEL_TOGGLE_CATEGORY':
+            toggleChannelCategory(parameters.browseId, parameters.name);
+            break;
+        case 'CATEGORY_PICKER_SHOW':
+            showCategoryPicker(parameters);
+            break;
+        case 'ADD_CHANNEL_TO_CATEGORY':
+            addChannelToCategory(parameters);
             break;
         case 'SCREEN_OFF':
             for (const child of document.body.children) {

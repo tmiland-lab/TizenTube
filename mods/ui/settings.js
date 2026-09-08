@@ -602,6 +602,17 @@ export default function modernUI(update, parameters) {
                     }
                 },
                 {
+                    name: t('settings.options.uiSettings.options.channelCategories.title'),
+                    icon: 'MENU',
+                    value: null,
+                    action: {
+                        customAction: {
+                            action: 'CHANNEL_CATEGORIES_SHOW',
+                            parameters: false
+                        }
+                    }
+                },
+                {
                     name: t('settings.options.uiSettings.options.launchToOnStartup.title'),
                     icon: 'TV',
                     value: null,

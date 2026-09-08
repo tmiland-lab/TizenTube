@@ -162,6 +162,33 @@
                         "addToSidebar": "Add Channel to Sidebar",
                         "removeFromSidebar": "Remove Channel from Sidebar"
                     },
+                    "channelCategories": {
+                        "title": "Channel Categories",
+                        "subtitle": "Group sidebar channels into categories",
+                        "newCategory": {
+                            "title": "New Category",
+                            "subtitle": "Adds an empty category"
+                        },
+                        "deleteCategory": {
+                            "title": "Delete Category",
+                            "subtitle": "Channels in it become uncategorized"
+                        },
+                        "assignChannels": {
+                            "title": "Assign Channels",
+                            "subtitle": "Toggle which channels belong to this category"
+                        },
+                        "noCategory": {
+                            "title": "No Category",
+                            "subtitle": "Adds the channel without a category"
+                        },
+                        "addToCategory": {
+                            "title": "Add to Category",
+                            "subtitle": "{{channel}}"
+                        },
+                        "channelsCount": "{{count}} channels",
+                        "empty": "No categories yet. Create one with \"New Category\", then add channels to it from any channel page.",
+                        "noChannels": "No channels pinned to the sidebar yet. Open a channel page and use \"Add Channel to Sidebar\" first."
+                    },
                     "launchToOnStartup": {
                         "title": "Launch To on Startup",
                         "subtitle": "Choose the default page TizenTube opens to on startup"
@@ -298,6 +325,18 @@
         "sidebarContentsUpdated": {
             "title": "Sidebar Contents Updated",
             "subtitle": "The sidebar contents have been updated."
+        },
+        "categoryCreated": {
+            "title": "Category Created",
+            "subtitle": "{{name}} created. Assign channels to it from the category settings."
+        },
+        "categoryDeleted": {
+            "title": "Category Deleted",
+            "subtitle": "{{name}} deleted. Its channels are now uncategorized."
+        },
+        "channelAssigned": {
+            "title": "Channel Updated",
+            "subtitle": "{{channel}} → {{category}}"
         }
     }
 }

@@ -1,4 +1,5 @@
 import { configChangeEmitter, configRead, configWrite } from "../config.js";
+import { sidebarEntryTitle } from "../utils/sidebarCategories.js";
 import getCommandExecutor from "./customCommandExecution.js";
 import { GuideEntryRenderer } from "./ytUI.js";
 
@@ -42,27 +43,29 @@ JSON.parse = function () {
             const items = r.items[0].guideSectionRenderer.items;
             const copiedItems = JSON.parse(JSON.stringify(items));
 
+            const orderedItems = [];
             for (const orderItem of order) {
                 if (typeof orderItem === 'object' && orderItem !== null) {
-                    const customItem = GuideEntryRenderer(
-                        orderItem.title,
+                    // Custom channel entry. Always render a fresh renderer so a
+                    // native subscription entry with the same browseId can't
+                    // shadow the custom (category-prefixed) title.
+                    const nativeItem = copiedItems.find(item =>
+                        item.guideEntryRenderer.navigationEndpoint?.browseEndpoint?.browseId === orderItem.browseId);
+                    orderedItems.push(GuideEntryRenderer(
+                        sidebarEntryTitle(orderItem),
                         {
                             browseEndpoint: {
                                 browseId: orderItem.browseId
                             }
                         },
-                        'PERSON'
-                    );
-                    copiedItems.push(customItem);
+                        'PERSON',
+                        nativeItem?.guideEntryRenderer?.thumbnail
+                    ));
+                    continue;
                 }
-            }
-
-            const orderedItems = [];
-            for (const orderItem of order) {
-                const browseId = typeof orderItem === 'object' ? orderItem.browseId : orderItem;
                 const index = copiedItems.findIndex(item => {
                     const itemBrowseId = item.guideEntryRenderer.navigationEndpoint?.browseEndpoint?.browseId;
-                    return itemBrowseId === browseId || (browseId === 'search' && item.guideEntryRenderer.navigationEndpoint?.searchEndpoint);
+                    return itemBrowseId === orderItem || (orderItem === 'search' && item.guideEntryRenderer.navigationEndpoint?.searchEndpoint);
                 });
                 if (index !== -1) {
                     orderedItems.push(copiedItems[index]);

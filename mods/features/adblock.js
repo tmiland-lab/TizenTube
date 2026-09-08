@@ -295,6 +295,8 @@ JSON.parse = function () {
       const inSidebar = configRead('sidebarContentsOrder')?.some(orderItem =>
         (typeof orderItem === 'object' ? orderItem.browseId : orderItem) === browseId);
 
+      const hasCategories = configRead('sidebarCategories')?.length > 0;
+
       r.contents.tvBrowseRenderer.content.tvSurfaceContentRenderer.header.channelHeaderRenderer.buttons.push({
         buttonRenderer: ButtonRenderer(
           false,
@@ -302,7 +304,8 @@ JSON.parse = function () {
           inSidebar ? 'REMOVE' : 'ADD',
           {
             customAction: {
-              action: 'ADD_OR_REMOVE_CHANNEL_TO_SIDEBAR',
+              action: inSidebar || !hasCategories ?
+                'ADD_OR_REMOVE_CHANNEL_TO_SIDEBAR' : 'CATEGORY_PICKER_SHOW',
               parameters: {
                 browseId,
                 title
