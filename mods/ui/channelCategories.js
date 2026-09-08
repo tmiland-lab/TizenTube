@@ -97,6 +97,25 @@ export function showCategoryOptions(parameters) {
     const buttons = [
         buttonItem(
             {
+                title: t('settings.options.uiSettings.options.channelCategories.openFeed.title'),
+                subtitle: t('settings.options.uiSettings.options.channelCategories.openFeed.subtitle')
+            },
+            {
+                icon: 'PLAY_CIRCLE'
+            },
+            [
+                {
+                    customAction: {
+                        action: 'CATEGORY_FEED_SHOW',
+                        parameters: {
+                            name
+                        }
+                    }
+                }
+            ]
+        ),
+        buttonItem(
+            {
                 title: t('settings.options.uiSettings.options.channelCategories.assignChannels.title'),
                 subtitle: t('settings.options.uiSettings.options.channelCategories.assignChannels.subtitle')
             },

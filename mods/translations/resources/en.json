@@ -186,8 +186,16 @@
                             "subtitle": "{{channel}}"
                         },
                         "channelsCount": "{{count}} channels",
+                        "openFeed": {
+                            "title": "Open Category Feed",
+                            "subtitle": "Plays the latest videos from all channels in this category"
+                        },
                         "empty": "No categories yet. Create one with \"New Category\", then add channels to it from any channel page.",
                         "noChannels": "No channels pinned to the sidebar yet. Open a channel page and use \"Add Channel to Sidebar\" first."
+                    },
+                    "enableCategorySidebarEntry": {
+                        "title": "Show Categories in Sidebar",
+                        "subtitle": "Adds a one-click feed entry per category to the sidebar"
                     },
                     "launchToOnStartup": {
                         "title": "Launch To on Startup",
@@ -337,6 +345,22 @@
         "channelAssigned": {
             "title": "Channel Updated",
             "subtitle": "{{channel}} → {{category}}"
+        },
+        "categoryNamingHint": {
+            "title": "Type the Category Name",
+            "subtitle": "Use the search screen to type the name, then confirm. It becomes the category — no search is performed."
+        },
+        "categoryFeedLoading": {
+            "title": "Opening Category Feed",
+            "subtitle": "Loading {{count}} channels from {{name}}…"
+        },
+        "categoryFeedStarted": {
+            "title": "Category Feed: {{name}}",
+            "subtitle": "{{count}} videos queued. Videos auto-advance through the whole category."
+        },
+        "categoryFeedEmpty": {
+            "title": "Category Feed Empty",
+            "subtitle": "No playable videos found for {{name}}. Assign channels to it first."
         }
     }
 }

@@ -43,9 +43,45 @@ JSON.parse = function () {
             const items = r.items[0].guideSectionRenderer.items;
             const copiedItems = JSON.parse(JSON.stringify(items));
 
+            // Optional one-click category feed entries (SmartTube-like):
+            // rendered, not persisted, so the toggle cleanly removes them.
+            let effectiveOrder = order;
+            if (configRead('enableCategorySidebarEntry')) {
+                const categoryEntries = configRead('sidebarCategories').map(name => ({
+                    browseId: 'FEttcategory:' + name,
+                    title: name,
+                    isCategoryFeed: true
+                }));
+                const firstObjectIndex = order.findIndex(item => typeof item === 'object' && item !== null && !item.isCategoryFeed);
+                effectiveOrder = firstObjectIndex === -1
+                    ? [...order, ...categoryEntries]
+                    : [...order.slice(0, firstObjectIndex), ...categoryEntries, ...order.slice(firstObjectIndex)];
+            }
+
             const orderedItems = [];
-            for (const orderItem of order) {
+            for (const orderItem of effectiveOrder) {
                 if (typeof orderItem === 'object' && orderItem !== null) {
+                    if (orderItem.isCategoryFeed) {
+                        orderedItems.push(GuideEntryRenderer(
+                            orderItem.title,
+                            {
+                                commandExecutorCommand: {
+                                    commands: [
+                                        {
+                                            customAction: {
+                                                action: 'CATEGORY_FEED_SHOW',
+                                                parameters: {
+                                                    name: orderItem.title
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            'MENU'
+                        ));
+                        continue;
+                    }
                     // Custom channel entry. Always render a fresh renderer so a
                     // native subscription entry with the same browseId can't
                     // shadow the custom (category-prefixed) title.

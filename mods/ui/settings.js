@@ -613,6 +613,11 @@ export default function modernUI(update, parameters) {
                     }
                 },
                 {
+                    name: t('settings.options.uiSettings.options.enableCategorySidebarEntry.title'),
+                    icon: 'MENU',
+                    value: 'enableCategorySidebarEntry'
+                },
+                {
                     name: t('settings.options.uiSettings.options.launchToOnStartup.title'),
                     icon: 'TV',
                     value: null,

@@ -63,7 +63,41 @@ function getGuide() {
     });
 }
 
+/**
+ * Fetches a channel's browse page (home/videos content).
+ * Resolves null on error so callers can skip failed channels.
+ * @param {string} browseId channel id (UC...)
+ * @returns {Promise<object|null>}
+ */
+function browseChannel(browseId) {
+    const mappings = Object.values(window._yttv).find(a => a && a.mappings);
+    const CurrentIdentityService = mappings.get('CurrentIdentityService');
+    const KabukiInnerTubeClient = mappings.get('KabukiInnerTubeClient');
+
+    return CurrentIdentityService.get().then(identity => {
+        const request = {
+            identity,
+            isPrefetch: false,
+            path: '/youtubei/v1/browse',
+            payload: {
+                browseId
+            },
+            clickTracking: {
+                clickTrackingParams: null
+            }
+        };
+
+        return new Promise((resolve) => {
+            KabukiInnerTubeClient.fetch(request).subscribe(
+                (response) => resolve(response),
+                () => resolve(null)
+            );
+        });
+    }).catch(() => null);
+}
+
 export {
     requestNextAndNavigateChannel,
-    getGuide
+    getGuide,
+    browseChannel
 }

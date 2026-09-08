@@ -56,6 +56,7 @@ const defaultConfig = {
   disabledSidebarContents: [],
   sidebarContentsOrder: [],
   sidebarCategories: [],
+  enableCategorySidebarEntry: false,
   disableChannelsOnSidebar: false,
   enableUpdater: true,
   autoFrameRate: false,

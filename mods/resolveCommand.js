@@ -13,11 +13,12 @@ import {
     showCategoryOptions,
     showCategoryAssign,
     showCategoryPicker,
-    createCategory,
     deleteCategoryAndCleanup,
     toggleChannelCategory,
     addChannelToCategory
 } from './ui/channelCategories.js';
+import { startCategoryNaming } from './features/categoryNaming.js';
+import { openCategoryFeed } from './features/categoryFeed.js';
 
 export default function resolveCommand(cmd, _) {
     // resolveCommand function is pretty OP, it can do from opening modals, changing client settings and way more.
@@ -311,7 +312,7 @@ function customAction(action, parameters) {
             showChannelCategories(parameters);
             break;
         case 'CATEGORY_CREATE':
-            createCategory();
+            startCategoryNaming();
             break;
         case 'CATEGORY_OPTIONS_SHOW':
             showCategoryOptions(parameters);
@@ -330,6 +331,9 @@ function customAction(action, parameters) {
             break;
         case 'ADD_CHANNEL_TO_CATEGORY':
             addChannelToCategory(parameters);
+            break;
+        case 'CATEGORY_FEED_SHOW':
+            openCategoryFeed(parameters.name);
             break;
         case 'SCREEN_OFF':
             for (const child of document.body.children) {
