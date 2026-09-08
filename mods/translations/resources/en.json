@@ -167,7 +167,8 @@
                         "subtitle": "Group sidebar channels into categories",
                         "newCategory": {
                             "title": "New Category",
-                            "subtitle": "Adds an empty category"
+                            "subtitle": "Adds an empty category",
+                            "placeholder": "Category name"
                         },
                         "deleteCategory": {
                             "title": "Delete Category",
@@ -191,7 +192,11 @@
                             "subtitle": "Plays the latest videos from all channels in this category"
                         },
                         "empty": "No categories yet. Create one with \"New Category\", then add channels to it from any channel page.",
-                        "noChannels": "No channels pinned to the sidebar yet. Open a channel page and use \"Add Channel to Sidebar\" first."
+                        "noChannels": "No channels pinned to the sidebar yet. Open a channel page and use \"Add Channel to Sidebar\" first.",
+                        "newCategorySearch": {
+                            "title": "New Category (via search)",
+                            "subtitle": "Names the category using the search screen"
+                        }
                     },
                     "enableCategorySidebarEntry": {
                         "title": "Show Categories in Sidebar",

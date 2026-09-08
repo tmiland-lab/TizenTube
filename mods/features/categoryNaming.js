@@ -1,7 +1,9 @@
 // Category naming without a TV keyboard: the YouTube TV app's search screen
 // is the only text input available to a userscript. "New Category" opens the
-// search screen with a flag armed; the wrapped InnerTube client captures the
-// submitted /search query as the category name and cancels the search.
+// search screen with a flag armed; when the app executes the search it sets
+// #/search?q=<query> — we read the query from the hash, create the category,
+// and navigate back. (Network-layer capture does not work: the app binds
+// fetch/XHR references at boot, before the userscript injects.)
 
 import { configRead, configWrite } from '../config.js';
 import { getGuide } from '../utils/innerTubeCalls.js';
@@ -12,12 +14,35 @@ import { t } from 'i18next';
 
 let namingMode = false;
 
-export function startCategoryNaming() {
+const ARM_KEY = 'ytaf-naming-armed';
+const ARM_TTL_MS = 5 * 60 * 1000;
+
+function arm() {
     namingMode = true;
+    try { window.localStorage[ARM_KEY] = String(Date.now()); } catch (e) {}
+}
+
+function isArmed() {
+    if (namingMode) return true;
+    try {
+        const t = Number(window.localStorage[ARM_KEY]);
+        if (t && Date.now() - t < ARM_TTL_MS) return true;
+        if (t) delete window.localStorage[ARM_KEY];
+    } catch (e) {}
+    return false;
+}
+
+function disarm() {
+    namingMode = false;
+    try { delete window.localStorage[ARM_KEY]; } catch (e) {}
+}
+
+export function startCategoryNaming() {
+    arm();
     navigateToSearch().then(ok => {
         if (!ok) {
             // No search entry available (unexpected) — fall back to auto names.
-            namingMode = false;
+            disarm();
             createCategory();
             showChannelCategories(true);
             return;
@@ -38,45 +63,22 @@ async function navigateToSearch() {
     return true;
 }
 
-function createNamedCategory(name) {
-    const categories = configRead('sidebarCategories');
-    if (!categories.includes(name)) {
-        configWrite('sidebarCategories', [...categories, name]);
-    }
-    showToast(
-        t('toasts.categoryCreated.title'),
-        t('toasts.categoryCreated.subtitle', { name })
-    );
-    setTimeout(() => showChannelCategories(false), 500);
+function captureFromHash() {
+    const m = location.hash.match(/[?&]q=([^&]+)/);
+    if (!m) return;
+    disarm();
+    const query = decodeURIComponent(m[1].replace(/\+/g, ' ')).trim();
+    if (query) createNamedCategory(query);
+    resolveCommand({ signalAction: { signal: 'POPUP_BACK' } });
 }
 
-/**
- * Wraps the InnerTube client once. While namingMode is armed, the next
- * /youtubei/v1/search request is captured instead of executed.
- */
 export function initCategoryNaming() {
-    const tryWrap = (attempt = 0) => {
-        const mappings = Object.values(window._yttv || {}).find(a => a && a.mappings);
-        const client = mappings?.get('KabukiInnerTubeClient');
-        if (!client || typeof client.fetch !== 'function') {
-            if (attempt < 100) setTimeout(() => tryWrap(attempt + 1), 250);
-            return;
-        }
-        if (client.__ttNamingPatched) return;
-
-        const ogFetch = client.fetch.bind(client);
-        client.__ttNamingPatched = true;
-        client.fetch = function (request) {
-            if (namingMode && request?.path === '/youtubei/v1/search') {
-                namingMode = false;
-                const query = (request.payload?.query || '').trim();
-                if (query) createNamedCategory(query);
-                resolveCommand({ signalAction: { signal: 'POPUP_BACK' } });
-                // Cancel the actual search request.
-                return { subscribe() {} };
-            }
-            return ogFetch(request);
-        };
+    const check = () => {
+        if (!isArmed()) return;
+        if (!location.hash.includes('/search')) return;
+        captureFromHash();
     };
-    tryWrap();
+    window.addEventListener('hashchange', check);
+    // Search may be a full document navigation — capture on the fresh boot.
+    setTimeout(check, 2500);
 }

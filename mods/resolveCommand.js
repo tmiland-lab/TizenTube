@@ -13,6 +13,7 @@ import {
     showCategoryOptions,
     showCategoryAssign,
     showCategoryPicker,
+    createCategoryViaDialog,
     deleteCategoryAndCleanup,
     toggleChannelCategory,
     addChannelToCategory
@@ -312,6 +313,9 @@ function customAction(action, parameters) {
             showChannelCategories(parameters);
             break;
         case 'CATEGORY_CREATE':
+            createCategoryViaDialog();
+            break;
+        case 'CATEGORY_CREATE_SEARCH':
             startCategoryNaming();
             break;
         case 'CATEGORY_OPTIONS_SHOW':

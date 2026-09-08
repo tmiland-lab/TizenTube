@@ -10,6 +10,7 @@ import {
     setChannelCategory
 } from '../utils/sidebarCategories.js';
 import { buttonItem, overlayPanelItemListRenderer, overlayMessageRenderer, showModal, showToast } from './ytUI.js';
+import showTextInput from './textInputDialog.js';
 import { t } from 'i18next';
 
 function channelsInCategory(name) {
@@ -39,11 +40,21 @@ export function showChannelCategories(update) {
                     customAction: {
                         action: 'CATEGORY_CREATE'
                     }
-                },
+                }
+            ]
+        ),
+        buttonItem(
+            {
+                title: t('settings.options.uiSettings.options.channelCategories.newCategorySearch.title'),
+                subtitle: t('settings.options.uiSettings.options.channelCategories.newCategorySearch.subtitle')
+            },
+            {
+                icon: 'SEARCH'
+            },
+            [
                 {
                     customAction: {
-                        action: 'CHANNEL_CATEGORIES_SHOW',
-                        parameters: true
+                        action: 'CATEGORY_CREATE_SEARCH'
                     }
                 }
             ]
@@ -290,6 +301,24 @@ export function createCategory() {
         })
     );
     return name;
+}
+
+export function createCategoryViaDialog() {
+    showTextInput({
+        title: t('settings.options.uiSettings.options.channelCategories.newCategory.title'),
+        placeholder: t('settings.options.uiSettings.options.channelCategories.newCategory.placeholder'),
+        onSubmit: (name) => {
+            const categories = configRead('sidebarCategories');
+            if (!categories.includes(name)) {
+                configWrite('sidebarCategories', [...categories, name]);
+            }
+            showToast(
+                t('toasts.categoryCreated.title'),
+                t('toasts.categoryCreated.subtitle', { name })
+            );
+            setTimeout(() => showChannelCategories(true), 300);
+        }
+    });
 }
 
 export function deleteCategoryAndCleanup(name) {
