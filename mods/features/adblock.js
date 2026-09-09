@@ -297,7 +297,12 @@ JSON.parse = function () {
 
       const hasCategories = configRead('sidebarCategories')?.length > 0;
 
-      r.contents.tvBrowseRenderer.content.tvSurfaceContentRenderer.header.channelHeaderRenderer.buttons.push({
+      const headerButtons = r.contents.tvBrowseRenderer.content.tvSurfaceContentRenderer.header.channelHeaderRenderer.buttons;
+      if (headerButtons.some(b => b.buttonRenderer?.command?.customAction?.action === 'ADD_OR_REMOVE_CHANNEL_TO_SIDEBAR' ||
+          b.buttonRenderer?.command?.customAction?.action === 'CATEGORY_PICKER_SHOW')) {
+        return;
+      }
+      headerButtons.push({
         buttonRenderer: ButtonRenderer(
           false,
           inSidebar ? t('settings.options.uiSettings.options.sortSidebarContents.removeFromSidebar') : t('settings.options.uiSettings.options.sortSidebarContents.addToSidebar'),
