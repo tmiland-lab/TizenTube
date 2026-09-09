@@ -540,6 +540,22 @@ function addLongPress(items) {
     : item.lockupViewModel.rendererContext.commandContext.onLongPress = {
       innertubeCommand: data
     };
+    // Add Channel to Category (SmartTube-style) in the generated menu too
+    const generatedMenu = data.showMenuCommand && data.showMenuCommand.menu && data.showMenuCommand.menu.menuRenderer;
+    if (generatedMenu && Array.isArray(generatedMenu.items) &&
+        !generatedMenu.items.some(mi => mi.menuServiceItemRenderer?.serviceEndpoint?.customAction?.action === 'ADD_CHANNEL_FROM_VIDEO')) {
+      generatedMenu.items.push(MenuServiceItemRenderer(
+        t('settings.options.uiSettings.options.channelCategories.addChannelToCategory'),
+        {
+          customAction: {
+            action: 'ADD_CHANNEL_FROM_VIDEO',
+            parameters: {
+              videoId: data.videoId
+            }
+          }
+        }
+      ));
+    }
   }
 }
 
