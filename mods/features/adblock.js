@@ -1,7 +1,7 @@
 import { configRead } from '../config.js';
 import Chapters from '../ui/chapters.js';
 import resolveCommand from '../resolveCommand.js';
-import { timelyAction, longPressData, MenuServiceItemRenderer, ShelfRenderer, TileRenderer, ButtonRenderer } from '../ui/ytUI.js';
+import { timelyAction, longPressData, MenuServiceItemRenderer, ShelfRenderer, TileRenderer, ButtonRenderer, buttonItem } from '../ui/ytUI.js';
 import { PatchSettings } from '../ui/customYTSettings.js';
 import { t } from 'i18next';
 
@@ -500,19 +500,21 @@ function addLongPress(items) {
         menuItems.push(button);
       }
       const videoIdForCategory = item.tileRenderer ? item.tileRenderer.contentId : item.lockupViewModel.contentId;
-      if (videoIdForCategory && !hasMenuItem(se => se.customAction?.action === 'ADD_CHANNEL_FROM_VIDEO')) {
-        const catButton = MenuServiceItemRenderer(
+      if (videoIdForCategory && !hasMenuItem(se => se.playlistEditEndpoint?.customAction?.action === 'ADD_CHANNEL_FROM_VIDEO')) {
+        menuItems.push(MenuServiceItemRenderer(
           t('settings.options.uiSettings.options.channelCategories.addChannelToCategory'),
           {
-            customAction: {
-              action: 'ADD_CHANNEL_FROM_VIDEO',
-              parameters: {
-                videoId: videoIdForCategory
+            clickTrackingParams: null,
+            playlistEditEndpoint: {
+              customAction: {
+                action: 'ADD_CHANNEL_FROM_VIDEO',
+                parameters: {
+                  videoId: videoIdForCategory
+                }
               }
             }
           }
-        );
-        item.tileRenderer ? item.tileRenderer.onLongPressCommand.showMenuCommand.menu.menuRenderer.items.push(catButton) : item.lockupViewModel.rendererContext.commandContext.onLongPress.innertubeCommand.showMenuCommand.menu.menuRenderer.items.push(catButton);
+        ));
       }
       continue;
     }
@@ -547,10 +549,13 @@ function addLongPress(items) {
       generatedMenu.items.push(MenuServiceItemRenderer(
         t('settings.options.uiSettings.options.channelCategories.addChannelToCategory'),
         {
-          customAction: {
-            action: 'ADD_CHANNEL_FROM_VIDEO',
-            parameters: {
-              videoId: data.videoId
+          clickTrackingParams: null,
+          playlistEditEndpoint: {
+            customAction: {
+              action: 'ADD_CHANNEL_FROM_VIDEO',
+              parameters: {
+                videoId: data.videoId
+              }
             }
           }
         }
