@@ -480,6 +480,12 @@ function addLongPress(items) {
     if (item?.tileRenderer?.style !== 'TILE_STYLE_YTLR_DEFAULT' && item?.lockupViewModel?.contentType !== 'LOCKUP_CONTENT_TYPE_VIDEO') continue;
     if (item?.tileRenderer?.onLongPressCommand?.showMenuCommand?.menu?.menuRenderer?.items
       || item?.lockupViewModel?.rendererContext?.commandContext?.onLongPress?.innertubeCommand?.showMenuCommand?.menu?.menuRenderer?.items) {
+      const menuItems = item.tileRenderer ? item.tileRenderer.onLongPressCommand.showMenuCommand.menu.menuRenderer.items
+        : item.lockupViewModel.rendererContext.commandContext.onLongPress.innertubeCommand.showMenuCommand.menu.menuRenderer.items;
+      const hasMenuItem = (check) => menuItems.some(mi =>
+        (mi.menuServiceItemRenderer?.serviceEndpoint && check(mi.menuServiceItemRenderer.serviceEndpoint)) ||
+        (mi.compactLinkRenderer?.serviceEndpoint?.commandExecutorCommand?.commands?.some(c => c.customAction && check({ customAction: c.customAction }))));
+
       const copiedItem = JSON.parse(JSON.stringify(item));
       const button = MenuServiceItemRenderer('Add to Queue', {
         clickTrackingParams: null,
@@ -490,9 +496,11 @@ function addLongPress(items) {
           }
         }
       })
-      item.tileRenderer ? item.tileRenderer.onLongPressCommand.showMenuCommand.menu.menuRenderer.items.push(button) : item.lockupViewModel.rendererContext.commandContext.onLongPress.innertubeCommand.showMenuCommand.menu.menuRenderer.items.push(button);
+      if (!hasMenuItem(se => !!se.playlistEditEndpoint)) {
+        menuItems.push(button);
+      }
       const videoIdForCategory = item.tileRenderer ? item.tileRenderer.contentId : item.lockupViewModel.contentId;
-      if (videoIdForCategory) {
+      if (videoIdForCategory && !hasMenuItem(se => se.customAction?.action === 'ADD_CHANNEL_FROM_VIDEO')) {
         const catButton = MenuServiceItemRenderer(
           t('settings.options.uiSettings.options.channelCategories.addChannelToCategory'),
           {
