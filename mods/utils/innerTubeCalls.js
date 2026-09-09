@@ -96,8 +96,68 @@ function browseChannel(browseId) {
     }).catch(() => null);
 }
 
+
+/**
+ * Resolves a video's owner channel (browseId + title) via /next,
+ * without navigating.
+ * @param {string} videoId
+ * @returns {Promise<{browseId: string, title: string}|null>}
+ */
+function getVideoOwner(videoId) {
+    const mappings = Object.values(window._yttv).find(a => a && a.mappings);
+    const CurrentIdentityService = mappings.get('CurrentIdentityService');
+    const KabukiInnerTubeClient = mappings.get('KabukiInnerTubeClient');
+
+    return CurrentIdentityService.get().then(identity => {
+        const request = {
+            identity,
+            isPrefetch: false,
+            path: '/youtubei/v1/next',
+            payload: {
+                videoId,
+                racyCheckOk: true,
+                contentCheckOk: true,
+                playbackContext: {
+                    lactMilliseconds: -1,
+                    isLyricsMode: false
+                },
+                autonavState: 'STATE_NONE',
+                mdxContext: {
+                    mdxReceiverContext: {
+                        mdxConnectedDevices: []
+                    }
+                }
+            },
+            clickTracking: {
+                clickTrackingParams: null
+            }
+        };
+
+        return new Promise((resolve) => {
+            KabukiInnerTubeClient.fetch(request).subscribe(
+                (response) => {
+                    const contents = response?.contents?.singleColumnWatchNextResults?.results?.results?.contents;
+                    const section = contents && contents.find(item => item.itemSectionRenderer);
+                    const vmr = section && section.itemSectionRenderer.contents.find(item => item.videoMetadataRenderer);
+                    const owner = vmr && vmr.videoMetadataRenderer && vmr.videoMetadataRenderer.owner && vmr.videoMetadataRenderer.owner.videoOwnerRenderer;
+                    if (!owner || !owner.navigationEndpoint || !owner.navigationEndpoint.browseEndpoint) {
+                        resolve(null);
+                        return;
+                    }
+                    resolve({
+                        browseId: owner.navigationEndpoint.browseEndpoint.browseId,
+                        title: (owner.title && owner.title.simpleText) || ''
+                    });
+                },
+                () => resolve(null)
+            );
+        });
+    }).catch(() => null);
+}
+
 export {
     requestNextAndNavigateChannel,
     getGuide,
-    browseChannel
+    browseChannel,
+    getVideoOwner
 }

@@ -491,6 +491,21 @@ function addLongPress(items) {
         }
       })
       item.tileRenderer ? item.tileRenderer.onLongPressCommand.showMenuCommand.menu.menuRenderer.items.push(button) : item.lockupViewModel.rendererContext.commandContext.onLongPress.innertubeCommand.showMenuCommand.menu.menuRenderer.items.push(button);
+      const videoIdForCategory = item.tileRenderer ? item.tileRenderer.contentId : item.lockupViewModel.contentId;
+      if (videoIdForCategory) {
+        const catButton = MenuServiceItemRenderer(
+          t('settings.options.uiSettings.options.channelCategories.addChannelToCategory'),
+          {
+            customAction: {
+              action: 'ADD_CHANNEL_FROM_VIDEO',
+              parameters: {
+                videoId: videoIdForCategory
+              }
+            }
+          }
+        );
+        item.tileRenderer ? item.tileRenderer.onLongPressCommand.showMenuCommand.menu.menuRenderer.items.push(catButton) : item.lockupViewModel.rendererContext.commandContext.onLongPress.innertubeCommand.showMenuCommand.menu.menuRenderer.items.push(catButton);
+      }
       continue;
     }
     if (!configRead('enableLongPress')) continue;

@@ -5,7 +5,7 @@ import { speedSettings } from './ui/speedUI.js';
 import { showToast, buttonItem, showModal, QrCodeRenderer, overlayPanelItemListRenderer, overlayMessageRenderer } from './ui/ytUI.js';
 import checkForUpdates from './features/updater.js';
 import { t } from 'i18next';
-import { requestNextAndNavigateChannel } from './utils/innerTubeCalls.js';
+import { requestNextAndNavigateChannel, getVideoOwner } from './utils/innerTubeCalls.js';
 import qrcode from 'qrcode-npm';
 import showGuideSettings from './ui/sidebarModification.js';
 import {
@@ -338,6 +338,20 @@ function customAction(action, parameters) {
             break;
         case 'CATEGORY_FEED_SHOW':
             openCategoryFeed(parameters.name);
+            break;
+        case 'ADD_CHANNEL_FROM_VIDEO':
+            (async () => {
+                const owner = await getVideoOwner(parameters.videoId);
+                if (!owner || !owner.browseId) {
+                    showToast(t('toasts.channelLookupFailed.title'), t('toasts.channelLookupFailed.subtitle'));
+                    return;
+                }
+                if (configRead('sidebarCategories').length > 0) {
+                    showCategoryPicker(owner);
+                } else {
+                    addChannelToCategory({ browseId: owner.browseId, title: owner.title, category: null });
+                }
+            })();
             break;
         case 'SCREEN_OFF':
             for (const child of document.body.children) {

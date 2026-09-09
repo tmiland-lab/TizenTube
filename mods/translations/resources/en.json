@@ -196,7 +196,8 @@
                         "newCategorySearch": {
                             "title": "New Category (via search)",
                             "subtitle": "Names the category using the search screen"
-                        }
+                        },
+                        "addChannelToCategory": "Add Channel to Category"
                     },
                     "enableCategorySidebarEntry": {
                         "title": "Show Categories in Sidebar",
@@ -366,6 +367,10 @@
         "categoryFeedEmpty": {
             "title": "Category Feed Empty",
             "subtitle": "No playable videos found for {{name}}. Assign channels to it first."
+        },
+        "channelLookupFailed": {
+            "title": "Channel Lookup Failed",
+            "subtitle": "Could not resolve the channel for this video."
         }
     }
 }
